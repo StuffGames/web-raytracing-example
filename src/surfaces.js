@@ -88,21 +88,35 @@ class Sphere extends Surface {
             return new HitRecord(null, Infinity, null, new RGB(0, 0 ,0));
         }
         
-        const tpos = (-B + Math.sqrt(discriminant))/(2*A);
-        const tneg = (-B - Math.sqrt(discriminant))/(2*A);
+        const tlarge = (-B + Math.sqrt(discriminant))/(2*A);
+        const tsmall = (-B - Math.sqrt(discriminant))/(2*A);
 
+        let tFinal = tsmall;
+
+        if (tsmall >= t0 && tsmall <= t1){
+            tFinal = tsmall;
+        }
+        else if (tlarge >= t0 && tlarge <= t1) {
+            tFinal = tlarge;
+        }
+        else {
+            return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
+        }
+
+        /*
         const temp = (tpos > 0) ? tpos: ((tneg > 0) ? tneg : ((tpos > tneg) ? tpos : tneg));
 
         if (temp < t0 || temp > t1) return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
+        */
 
         //console.log("T: ", temp);
 
         //console.log("Intersection at ", ray.evaluate(temp).toString());
 
-        const n = Vector3.scalarMultiplication(Vector3.subtract(ray.evaluate(temp),this.center), 2);
+        const n = Vector3.scalarMultiplication(Vector3.subtract(ray.evaluate(tFinal),this.center), 2);
 
         //n is surface normal
-        return new HitRecord(this, temp, n, this.color);
+        return new HitRecord(this, tFinal, n, this.color);
     }
 }
 
