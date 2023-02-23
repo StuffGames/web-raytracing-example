@@ -2,6 +2,8 @@ const canvas = document.querySelector("#main-canvas");
 
 const ctx = canvas.getContext('2d');
 
+let orth = false;
+
 const height = document.querySelector('#main-canvas').height;
 const width = document.querySelector('#main-canvas').width;
 const imageData = ctx.createImageData(width, height);
@@ -23,7 +25,10 @@ camera.d = 5;
 
 camera.create_basis();
 
+
 mainGroup.surfaces.forEach(function(surf) {
+    if (surf.name === "plane") return;
+
     //create a div with name and coordinates
     const mainDiv = document.querySelector("#input-div");
 
@@ -62,7 +67,7 @@ mainGroup.surfaces.forEach(function(surf) {
             else {
                 surf.center.z = e.target.value;
             }
-            drawImage();
+            drawImage(orth);
         });
 
         const coordText = document.createTextNode(input.id + ": ");
@@ -73,7 +78,86 @@ mainGroup.surfaces.forEach(function(surf) {
     });
 });
 
-function drawImage(){
+const camera_ids = [
+    "camera-pos-x", "camera-pos-y", "camera-pos-z",
+    "camera-dir-x", "camera-dir-y", "camera-dir-z",
+    "camera-distance", "camera-type"
+];
+
+function callBack(str) {
+    str = str.substring(7);
+
+    if (str === 'distance') {
+        return function (e){
+            camera.d = e.target.value;
+            drawImage(orth);
+        }
+    }else if (str === 'type') {
+        return function (e) {
+            orth = e.target.checked;
+            drawImage(orth);
+        }
+    }
+    else{
+        const prefix = str.substring(0, 3);
+        const suffix = str.substring(4);
+
+        if (prefix === 'pos') {
+            switch (suffix){
+                case 'x':
+                    return function (e) {
+                        camera.position.x = e.target.value;
+                        drawImage(orth);
+                    }
+                
+                case 'y':
+                    return function (e) {
+                        camera.position.y = e.target.value;
+                        drawImage(orth);
+                    }
+                
+                case 'z':
+                    return function(e) {
+                        camera.position.z = e.target.value;
+                        drawImage(orth);
+                    }
+            }
+        }
+        else if (prefix === 'dir') {
+            switch (suffix){
+                case 'x':
+                    return function (e) {
+                        camera.view.x = e.target.value;
+                        drawImage(orth);
+                    }
+                
+                case 'y':
+                    return function (e) {
+                        camera.view.y = e.target.value;
+                        drawImage(orth);
+                    }
+                
+                case 'z':
+                    return function(e) {
+                        camera.view.z = e.target.value;
+                        drawImage(orth);
+                    }
+            }
+        }
+    }
+
+    return function (e) {
+        console.log(e);
+    }
+}
+
+// [pos: x, y, z, dir: x, y, z]
+//const camera_coords = [];
+camera_ids.forEach(str => {
+    document.querySelector("#"+str).addEventListener('input', callBack(str));
+});
+
+function drawImage(ortho){
     for (let i = 0; i < imageData.width; i ++) {
         for(let j = 0; j < imageData.height; j ++){
             const pixel_ray = new Ray(new Vector3(0,0,0), new Vector3(0,0,0));
@@ -89,7 +173,7 @@ function drawImage(){
             // Vector3.add(Vector3.scalarMultiplication(camera.coord[0], small_u), 
             // Vector3.scalarMultiplication(camera.coord[1], -small_v))).normalize();
 
-            const view = camera.changeToPerspective(small_u, small_v);
+            const view = (ortho) ? camera.changeToOrthographic(small_u, small_v) : camera.changeToPerspective(small_u, small_v);
 
             pixel_ray.origin = view.origin;
             pixel_ray.direction = view.direction;
@@ -113,4 +197,4 @@ function drawImage(){
     ctx.putImageData(imageData, 0, 0);
 }
 
-drawImage();
+drawImage(orth);

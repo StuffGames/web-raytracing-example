@@ -8,7 +8,45 @@
 <body>
     <canvas id="main-canvas" width="800" height="400" style="border:1px solid #6a6dd5;"></canvas>
 
-    <div id="input-div" style="background-color: lightslategray;"></div>
+    <div id="input-div" style="background-color: lightslategray;">
+        <div id="camera-input">
+            camera:
+            <div>
+                position:
+                <div>
+                    x: <input id="camera-pos-x" class="coord-input" type="number" placeholder="x" value="2">
+                </div>
+                <div>
+                    y: <input id="camera-pos-y" class="coord-input" type="number" placeholder="y" value="4">
+                </div>
+                <div>
+                    z: <input id="camera-pos-z" class="coord-input" type="number" placeholder="z" value="6">
+                </div>
+            </div>
+
+            <div>
+                direction: 
+                <div>
+                    x: <input id="camera-dir-x" class="coord-input" type="number" placeholder="x" value="3">
+                </div>
+                <div>
+                    y: <input id="camera-dir-y" class="coord-input" type="number" placeholder="y" value="2">
+                </div>
+                <div>
+                    z: <input id="camera-dir-z" class="coord-input" type="number" placeholder="z" value="5">
+                </div>
+            </div>
+
+            <div>
+                distance (FOV): <input id="camera-distance" class="coord-input" type="number" placeholder="d" value="5">
+            </div>
+
+            <div>
+                perspective/orthographic: <input id="camera-type" type="checkbox">
+            </div>
+
+        </div>
+    </div>
 
     <script src="src/classes.js"></script>
     <script src="src/surfaces.js"></script>

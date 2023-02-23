@@ -1,3 +1,9 @@
+/**
+ * Vector2 class to represent a 2D vector or a 2D point in space
+ * 
+ * @param {Number} x number to represent the x value
+ * @param {Number} y number to represent the y value
+ */
 class Vector2 {
     constructor (x, y){
         this.x = x;
@@ -31,6 +37,13 @@ class Vector2 {
     }
 }
 
+/**
+ * Vector3 class to represent a 3D vector or a 3D point in space
+ * 
+ * @param {Number} x number to represent the x value
+ * @param {Number} y number to represent the y value
+ * @param {Number} z number to represent the z value
+ */
 class Vector3 {
     constructor (x, y, z){
         this.x = x;
@@ -66,6 +79,15 @@ class Vector3 {
     static divide(a, b){
         return new Vector3(a.x/b.x, a.y/b.y, a.z/b.z);
     }
+
+    /**
+     * Multiplies all values of Vector3 a by k and returns
+     * a new Vector3 with those values
+     * 
+     * @param {Vector3} a 
+     * @param {Number} k 
+     * @returns Vector3 with all values multiplied by k
+     */
     static scalarMultiplication(a, k){
         return new Vector3(a.x*k, a.y*k, a.z*k);
     }
