@@ -9,3 +9,24 @@
 #input-div {
     display: flex;
 }
+
+footer {
+    text-align: center;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#github-link{
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 20px;
+    color: black;
+    transition-duration: 0.2s;
+}
+#github-link:visited{
+    text-decoration: none;
+}
+#github-link:hover{
+    color: darkgray;
+}

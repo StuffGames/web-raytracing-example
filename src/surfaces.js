@@ -1,8 +1,15 @@
+/**
+ * Surface class interface
+ */
 class Surface {
 
+    /**
+     * Constructs a basic surface
+     */
     constructor(){
         //color: RGB ... later replace with shader/material
         this.color = new RGB(0,0,0);
+        this.material = new Material();
     }
 
     //return HitRecord
@@ -13,11 +20,21 @@ class Surface {
     }
 }
 
+/**
+ * Contains data and information about ray intersection
+ */
 class HitRecord {
+    /**
+     * Constructs a HitRecord from the information of the surface at intersection point
+     * @param {Surface} s - Surface which ray intersects
+     * @param {Number} t - t values in Ray where intersection occurs
+     * @param {Vector3} n - Normal of the surface at intersection
+     * @param {Color} c - To remove later (replace with material)
+     */
     constructor(s, t, n, c){
-        this.s = s; // Surface hit
-        this.t = t; // t value in Ray where intersection occurs
-        this.n = n; // nomral of surface at intersection
+        this.s = s;
+        this.t = t;
+        this.n = n;
         this.color = c;
     }
 
@@ -30,12 +47,13 @@ class Plane extends Surface {
 
     // Ax + By + Cz + D = 0
 
-    constructor (p0, n, name="plane") {
+    constructor (p0, n, name="plane", material = new Material()) {
         super();
         this.p0 = p0;
         this.n = n;
         this.d = -Vector3.dotProduct(this.n, this.p0);
         this.name = name;
+        this.material = material;
     }
 
     // calculate(point: Vector3): Number
@@ -59,12 +77,13 @@ class Sphere extends Surface {
 
     // (x - center.x)**2 + (y - center.y)**2 + (z - center.z)**2 = radius**2
 
-    constructor(center, radius, name = "sphere"){
+    constructor(center, radius, name = "sphere", material = new Material()){
         super();
         this.center = center; // Vector3
         if (radius <= 0) throw new Error("Radius has to be more than 0!");
         this.radius = radius; // Number
         this.name = name;
+        this.material = material;
     }
 
     // calculate(point: Vector3): Number
@@ -103,12 +122,6 @@ class Sphere extends Surface {
             return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
         }
 
-        /*
-        const temp = (tpos > 0) ? tpos: ((tneg > 0) ? tneg : ((tpos > tneg) ? tpos : tneg));
-
-        if (temp < t0 || temp > t1) return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
-        */
-
         //console.log("T: ", temp);
 
         //console.log("Intersection at ", ray.evaluate(temp).toString());
@@ -121,12 +134,13 @@ class Sphere extends Surface {
 }
 
 class Triangle extends Surface {
-    constructor(a, b, c, name="triangle") {
+    constructor(a, b, c, name="triangle", material = new Material()) {
         super();
         this.a = a; // Vector3
         this.b = b; // Vector3
         this.c = c; // Vector3
         this.name = name;
+        this.material = material;
     }
 }
 

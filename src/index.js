@@ -23,10 +23,13 @@ camera.position = new Vector3(2,4,6);//new Vector3(1,3,5);
 camera.view = new Vector3(3,2,5);//new Vector3(0,2,6);
 camera.d = 5;
 
-camera.create_basis();
+const scene = new Scene();
+scene.main_camera = camera;
+scene.surfaces_group = mainGroup;
 
+scene.main_camera.create_basis();
 
-mainGroup.surfaces.forEach(function(surf) {
+scene.surfaces_group.surfaces.forEach(function(surf) {
     if (surf.name === "plane") return;
 
     //create a div with name and coordinates
@@ -89,7 +92,7 @@ function callBack(str) {
 
     if (str === 'distance') {
         return function (e){
-            camera.d = e.target.value;
+            scene.main_camera.d = e.target.value;
             drawImage(orth);
         }
     }else if (str === 'type') {
@@ -106,19 +109,19 @@ function callBack(str) {
             switch (suffix){
                 case 'x':
                     return function (e) {
-                        camera.position.x = e.target.value;
+                        scene.main_camera.position.x = e.target.value;
                         drawImage(orth);
                     }
                 
                 case 'y':
                     return function (e) {
-                        camera.position.y = e.target.value;
+                        scene.main_camera.position.y = e.target.value;
                         drawImage(orth);
                     }
                 
                 case 'z':
                     return function(e) {
-                        camera.position.z = e.target.value;
+                        scene.main_camera.position.z = e.target.value;
                         drawImage(orth);
                     }
             }
@@ -127,19 +130,19 @@ function callBack(str) {
             switch (suffix){
                 case 'x':
                     return function (e) {
-                        camera.view.x = e.target.value;
+                        scene.main_camera.view.x = e.target.value;
                         drawImage(orth);
                     }
                 
                 case 'y':
                     return function (e) {
-                        camera.view.y = e.target.value;
+                        scene.main_camera.view.y = e.target.value;
                         drawImage(orth);
                     }
                 
                 case 'z':
                     return function(e) {
-                        camera.view.z = e.target.value;
+                        scene.main_camera.view.z = e.target.value;
                         drawImage(orth);
                     }
             }
@@ -173,13 +176,13 @@ function drawImage(ortho){
             // Vector3.add(Vector3.scalarMultiplication(camera.coord[0], small_u), 
             // Vector3.scalarMultiplication(camera.coord[1], -small_v))).normalize();
 
-            const view = (ortho) ? camera.changeToOrthographic(small_u, small_v) : camera.changeToPerspective(small_u, small_v);
+            const view = (ortho) ? scene.main_camera.changeToOrthographic(small_u, small_v) : scene.main_camera.changeToPerspective(small_u, small_v);
 
             pixel_ray.origin = view.origin;
             pixel_ray.direction = view.direction;
 
             //HitRecord
-            const pixel_hit = mainGroup.hit(pixel_ray, 0, 100);
+            const pixel_hit = scene.surfaces_group.hit(pixel_ray, 0, 100);
 
             const pixel_color = pixel_hit.color.rgb;
 
