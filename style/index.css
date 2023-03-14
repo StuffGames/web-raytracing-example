@@ -1,13 +1,33 @@
+html {
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: lavender;
+}
+
+#main-canvas{
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#input-div {
+    display: flex;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
 .surface-input-div {
     padding: 10px;
+    flex-grow: 1;
 }
 .coord-input {
     margin-left: 10px;
     margin-right: 10px;
     width: 50px;
 }
-#input-div {
-    display: flex;
+#camera-input{
+    padding: 10px;
+    flex-grow: 1;
 }
 
 footer {

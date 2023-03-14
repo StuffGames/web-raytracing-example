@@ -10,22 +10,36 @@ const imageData = ctx.createImageData(width, height);
 
 const plane = new Plane(new Vector3(2,3,0), new Vector3(0, 0, 1));
 plane.color = new RGB(255, 255, 0);
+plane.material.color = new Color(plane.color);
+plane.material.ka = new Color(new RGB(100, 100, 0));
 
-const sphere = new Sphere(new Vector3(0,0,0), 2);
+const sphere = new Sphere(new Vector3(0,0,2), 2);
 sphere.color = new RGB(255, 0, 0);
-const sphere2 = new Sphere(new Vector3(-3, 0, 0), 1, "2nd ball");
-sphere2.color = new RGB(0, 0, 255);
+sphere.material.color = new Color(sphere.color);
+sphere.material.ka = new Color(new RGB(100, 0, 0));
 
-const mainGroup = new Group([sphere2, sphere]);
+const sphere2 = new Sphere(new Vector3(-3, 0, 1), 1, "2nd ball");
+sphere2.color = new RGB(0, 0, 255);
+sphere2.material.color = new Color(sphere2.color);
+sphere2.material.ka = new Color(new RGB(0, 0, 100))
+
+const mainGroup = new Group([plane, sphere2, sphere]);
 
 const camera = new Camera();
-camera.position = new Vector3(2,4,6);//new Vector3(1,3,5);
-camera.view = new Vector3(3,2,5);//new Vector3(0,2,6);
-camera.d = 5;
+camera.position = new Vector3(6,7,3);//new Vector3(1,3,5);
+camera.view = new Vector3(1,1,0);//new Vector3(0,2,6);
+camera.d = 10;
 
 const scene = new Scene();
 scene.main_camera = camera;
 scene.surfaces_group = mainGroup;
+scene.background_color = new Color(new RGB(145, 207, 255));
+const light1 = new PointLight(new Color(new RGB(20, 20, 20)), new Vector3(8, 5, 10));
+const light2 = new PointLight(new Color(new RGB(15, 15, 15)), new Vector3(-8, 2, 6));
+const ambientLight = new AmbientLight(new Color(new RGB(1, 1, 1)));
+scene.lights.push(light1);
+scene.lights.push(light2);
+scene.lights.push(ambientLight);
 
 scene.main_camera.create_basis();
 
@@ -92,7 +106,7 @@ function callBack(str) {
 
     if (str === 'distance') {
         return function (e){
-            scene.main_camera.d = e.target.value;
+            scene.main_camera.d = Number(e.target.value);
             drawImage(orth);
         }
     }else if (str === 'type') {
@@ -109,19 +123,19 @@ function callBack(str) {
             switch (suffix){
                 case 'x':
                     return function (e) {
-                        scene.main_camera.position.x = e.target.value;
+                        scene.main_camera.position.x = Number(e.target.value);
                         drawImage(orth);
                     }
                 
                 case 'y':
                     return function (e) {
-                        scene.main_camera.position.y = e.target.value;
+                        scene.main_camera.position.y = Number(e.target.value);
                         drawImage(orth);
                     }
                 
                 case 'z':
                     return function(e) {
-                        scene.main_camera.position.z = e.target.value;
+                        scene.main_camera.position.z = Number(e.target.value);
                         drawImage(orth);
                     }
             }
@@ -130,19 +144,22 @@ function callBack(str) {
             switch (suffix){
                 case 'x':
                     return function (e) {
-                        scene.main_camera.view.x = e.target.value;
+                        scene.main_camera.view.x = Number(e.target.value);
+                        scene.main_camera.create_basis();
                         drawImage(orth);
                     }
                 
                 case 'y':
                     return function (e) {
-                        scene.main_camera.view.y = e.target.value;
+                        scene.main_camera.view.y = Number(e.target.value);
+                        scene.main_camera.create_basis();
                         drawImage(orth);
                     }
                 
                 case 'z':
                     return function(e) {
-                        scene.main_camera.view.z = e.target.value;
+                        scene.main_camera.view.z = Number(e.target.value);
+                        scene.main_camera.create_basis();
                         drawImage(orth);
                     }
             }
@@ -159,6 +176,26 @@ function callBack(str) {
 camera_ids.forEach(str => {
     document.querySelector("#"+str).addEventListener('input', callBack(str));
 });
+
+/**
+ * Returns the color at specific position based on ray in the interval [t0, t1]
+ * @param {Ray} ray - Ray being casted
+ * @param {Number} t0 - min of interval
+ * @param {Number} t1 - max of interval
+ * @returns {Color} the color from casted ray
+ */
+function shade_ray (ray, t0, t1) { // This function is gonna float around for a bit right now until i figure out exactly where i want it
+    const rec = scene.surfaces_group.hit(ray, t0, t1);
+    if (rec.t < Infinity) {
+        let c = new Color(new RGB(0, 0, 0)); // Initiate color as Color.black
+        for (let light of scene.lights) {
+            c = new Color(RGB.add(c.rgb, light.illuminate(ray, rec).rgb));
+        }
+        return c;
+    }
+    //else
+    return scene.background_color;
+}
 
 function drawImage(ortho){
     for (let i = 0; i < imageData.width; i ++) {
@@ -181,10 +218,18 @@ function drawImage(ortho){
             pixel_ray.origin = view.origin;
             pixel_ray.direction = view.direction;
 
-            //HitRecord
-            const pixel_hit = scene.surfaces_group.hit(pixel_ray, 0, 100);
+            // Stores the HitRecord of the nearest surface or null if miss
+            //const pixel_hit = scene.surfaces_group.hit(pixel_ray, 0, 100);
 
-            const pixel_color = pixel_hit.color.rgb;
+            // Stores color returned from HitRecord
+            //const pixel_color = pixel_hit.color.rgb;
+            
+            if (i === 400 && j === 300) {
+                console.log("here");
+            }
+            // Stores color computed by shading
+            const pixel_color = shade_ray(pixel_ray, 0, 100).rgb.rgb;
+
 
             const pixel = j * (width * 4) + i * 4;
 

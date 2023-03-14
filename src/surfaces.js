@@ -12,9 +12,18 @@ class Surface {
         this.material = new Material();
     }
 
-    //return HitRecord
-    // hit(ray: Ray, t0: Number, t1: Number): HitRecord
+    /**
+     * This function will return a the information of where the ray hits. 
+     * Null properties if the ray misses.
+     * Else the HitRecord object will return information about t value, normal n, surface s, and color
+     * @param {Ray} ray - Ray being cast
+     * @param {Number} t0 - Minimum t interval
+     * @param {Number} t1 - Maximum t interval
+     * @returns {HitRecord} Informaiton about where ray hit
+     */
     hit(ray, t0, t1) {
+        //return HitRecord
+        // hit(ray: Ray, t0: Number, t1: Number): HitRecord
         console.log(ray, t0, t1);
         return null;
     }
@@ -61,8 +70,17 @@ class Plane extends Surface {
         return Vector3.dotProduct(this.n, point) - this.d;
     }
 
-    //hit(ray: Ray, t0: Number, t1: Number): HitRecord
+    /**
+     * This function will return a the information of where the ray hits. 
+     * Null properties if the ray misses.
+     * Else the HitRecord object will return information about t value, normal n, surface s, and color
+     * @param {Ray} ray - Ray being cast
+     * @param {Number} t0 - Minimum t interval
+     * @param {Number} t1 - Maximum t interval
+     * @returns {HitRecord} Informaiton about where ray hit
+     */
     hit(ray, t0, t1) {
+        //hit(ray: Ray, t0: Number, t1: Number): HitRecord
         const denomiator = Vector3.dotProduct(this.n, ray.direction);
         if (denomiator == 0) return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
         const numerator = -(this.d + Vector3.dotProduct(this.n, ray.origin));
@@ -91,8 +109,18 @@ class Sphere extends Surface {
         return ((point.x - this.center.x)**2 + (point.y - this.center.y)**2 + (point.z - this.center.z)**2 - this.radius**2);
     }
 
-    // hit(ray: Vector3, t0: Number, t1: Number): HitRecord
+    /**
+     * This function will return a the information of where the ray hits. 
+     * Null properties if the ray misses.
+     * Else the HitRecord object will return information about t value, normal n, surface s, and color
+     * @param {Ray} ray - Ray being cast
+     * @param {Number} t0 - Minimum t interval
+     * @param {Number} t1 - Maximum t interval
+     * @returns {HitRecord} Informaiton about where ray hit
+     */
     hit(ray, t0, t1) {
+        // hit(ray: Vector3, t0: Number, t1: Number): HitRecord
+
         // Discriminant is B*B - 4*A*C
         // where A = d*d, B = 2*d*(e-c), and C = (e-c)*(e-c)-(r*r)
         const A = Vector3.dotProduct(ray.direction, ray.direction);
@@ -144,15 +172,32 @@ class Triangle extends Surface {
     }
 }
 
+/**
+ * Group of surfaces to calculate closest ray intersection
+ * @extends Surface
+ */
 class Group extends Surface {
-    //surfaces: List: Surface
+    /**
+     * Constructs a Group of surfaces with the list of surfaces
+     * @param {List<Surface>} surfaces - List of surfaces in the scene
+     */
     constructor (surfaces) {
+        //surfaces: List: Surface
         super();
         this.surfaces = surfaces;
     }
 
-    //hit(ray: Ray, t0: Number, t1: Number): HitRecord
+    /**
+     * This function will return a the information of the closest surface the ray hit
+     * Null properties if the ray misses.
+     * Else the HitRecord object will return information about t value, normal n, surface s, and color
+     * @param {Ray} ray - Ray being cast
+     * @param {Number} t0 - Minimum t interval
+     * @param {Number} t1 - Maximum t interval
+     * @returns {HitRecord} Informaiton about where ray hit
+     */
     hit(ray, t0, t1){
+        //hit(ray: Ray, t0: Number, t1: Number): HitRecord
         let closestHit = new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
         for (let surf of this.surfaces) {
             let rec = surf.hit(ray, t0, t1);
@@ -165,30 +210,3 @@ class Group extends Surface {
         return closestHit;
     }
 }
-
-/*
-const sphere = new Sphere(new Vector3(0,0,0), 2);
-sphere.color = new RGB(255, 0, 0);
-console.log(sphere.calculate(new Vector3(4, 4, 2)));
-
-const ray = new Ray(new Vector3(1, 2, 3), new Vector3(-3,-2,-5));
-const hit = sphere.hit(ray, 0, 10);
-console.log(hit);
-
-const plane = new Plane(new Vector3(2,3,0), new Vector3(0, 0, 1));
-console.log(plane.calculate(new Vector3(1, 2, 0)));
-plane.color = new RGB(255, 255, 255);
-const hit2 = plane.hit(ray, 0, 10);
-console.log(hit2);
-console.log("Intersection at: ", ray.evaluate(hit2.t));
-
-const mainGroup = new Group([plane, sphere]);
-
-console.log("camera");
-const camera = new Camera();
-camera.position = new Vector3(1,3,5);
-camera.view = new Vector3(0,2,6);
-camera.d = 5;
-*/
-
-//camera.create_basis();
