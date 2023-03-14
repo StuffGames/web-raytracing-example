@@ -1,3 +1,6 @@
+/**
+ * Defines a vector in 2D space with x and y
+ */
 class Vector2 {
     /**
      * Vector2 class to represent a 2D vector or a 2D point in space
@@ -158,9 +161,9 @@ class RGB {
      */
     static add(c1, c2) {
         return new RGB(
-            c1.r + c2.r,
-            c1.g + c2.g,
-            c1.b + c2.b
+            c1.rgb[0] + c2.rgb[0],
+            c1.rgb[1] + c2.rgb[1],
+            c1.rgb[2] + c2.rgb[2]
         );
     }
 
@@ -172,9 +175,9 @@ class RGB {
      */
     static multiply(c1, c2){
         return new RGB(
-            c1.r + c2.r,
-            c1.g + c2.g,
-            c1.b + c2.b
+            c1.rgb[0] * c2.rgb[0],
+            c1.rgb[1] * c2.rgb[1],
+            c1.rgb[2] * c2.rgb[2]
         );
     }
 
@@ -186,9 +189,9 @@ class RGB {
      */
     static divide(c1, c2){
         return new RGB(
-            c1.r/c2.r,
-            c1.g/c2.g,
-            c1.b/c2.b
+            c1.rgb[0]/c2.rgb[0],
+            c1.rgb[1]/c2.rgb[1],
+            c1.rgb[2]/c2.rgb[2]
         );
     }
 
@@ -199,7 +202,7 @@ class RGB {
      * @returns RGB with new values divided
      */
     static scalarDivision(c, k){
-        return new RGB(c.r/k, c.g/k, c.b/k);
+        return new RGB(c.rgb[0]/k, c.rgb[1]/k, c.rgb[2]/k);
     }
 
     /**
@@ -209,7 +212,7 @@ class RGB {
      * @returns RGB with values multiplied
      */
     static scalarMultiplication(c, k){
-        return new RGB(c.r*k, c.g*k, c.b*k);
+        return new RGB(c.rgb[0]*k, c.rgb[1]*k, c.rgb[2]*k);
     }
 }
 
@@ -225,6 +228,10 @@ class Color {
     constructor(rgb) {
         this.rgb = rgb;
     }
+
+    static white = new Color(new RGB(255, 255, 255));
+    
+    static black = new Color(new RGB(0, 0, 0));
 }
 
 // class Transform
@@ -293,4 +300,5 @@ class Scene {
     main_camera = new Camera();
     lights = [];
     surfaces_group = [];
+    background_color = new Color(new RGB(0, 0, 0));
 }

@@ -2,8 +2,15 @@
  * Light class interface.
  */
 class Light {
-    // illuminate(ray: Ray, hrec: HitRecord): Color
+    
+    /**
+     * Return color after BRDF calculation
+     * @param {Ray} ray - Ray casted from camera
+     * @param {HitRecord} hrec - HitRecord from casted ray
+     * @returns {Color} Color from BRDF calculation
+     */
     illuminate(ray, hrec){
+        // illuminate(ray: Ray, hrec: HitRecord): Color
         return new Color(new RGB(0, 0, 0));
     };
 }
@@ -31,15 +38,15 @@ class PointLight extends Light {
      * @returns {Color} Color from BRDF calculation
      */
     illuminate(ray, hrec) {
-        x = ray.evaluate(hrec.t); // Position on surface
-        r = Vector3.subtract(this.p, x).length(); // Radius, distance from position on surface to position of light source
-        l = Vector3.scalarDivision(Vector3.subtract(this.p, x), r); // Light direction to surface point x (normalized)
-        n = hrec.n; // Surface normal on surface at point x
+        const x = ray.evaluate(hrec.t); // Position on surface
+        const r = Vector3.subtract(this.p, x).length(); // Radius, distance from position on surface to position of light source
+        const l = Vector3.scalarDivision(Vector3.subtract(this.p, x), r); // Light direction to surface point x (normalized)
+        const n = hrec.n; // Surface normal on surface at point x
 
-        E = new Color(RGB.scalarDivision(RGB.scalarMultiplication(this.I, Math.max(0, Vector3.dotProduct(n, l))),(r**2))); // Irradiance as Color object
-        k = hrec.s.material.evaluate(l, v, n); // BRDF shading... i think
+        const E = new Color(RGB.scalarDivision(RGB.scalarMultiplication(this.I.rgb, Math.max(0, Vector3.dotProduct(n, l))),(r**2))); // Irradiance as Color object
+        const k = hrec.s.material.evaluate(l, ray.direction/*v*/, n); // BRDF shading... i think
 
-        return new Color(RGB.multiply(E, k)); // completed BRDF... i think
+        return new Color(RGB.multiply(E.rgb, k.rgb)); // completed BRDF... i think
     }
 }
 
@@ -64,8 +71,8 @@ class AmbientLight extends Light {
      * @returns {Color} color from BRDF calculation
      */
     illuminate(ray, hrec){
-        k = hrec.s.material.ka;
-        return new Color(RGB.multiply(k, this.I));
+        const k = hrec.s.material.ka;
+        return new Color(RGB.multiply(k.rgb, this.I.rgb));
     }
 }
 
@@ -75,7 +82,7 @@ class AmbientLight extends Light {
 class Material {
 
     color = new Color(new RGB(0, 0, 0)); // Color of the material
-    ka = new Color(new RGB(0, 0, 0));
+    ka = new Color(new RGB(100, 100, 100)); // Ambient Reflectance
 
     /**
      * Calculates color with BRDF based on material
@@ -85,7 +92,8 @@ class Material {
      * @returns {Color} color based on material
      */
     evaluate(l, v, n){
-        // Implement Blinn-Phong shading : TODO later
-        return new Color(new RGB(0,0,0))
+        // Implement  Blinn-Phong specular reflection : TODO later
+        //return new Color(new RGB(1, 1, 1));
+        return this.color;
     }
 }
