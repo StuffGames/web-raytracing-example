@@ -87,7 +87,7 @@ class Plane extends Surface {
         const t = numerator/denomiator;
         //if (t > 0 && t < t1) console.log("t: ", t);
         if (t < t0 || t > t1) return new HitRecord(null, Infinity, null, new RGB(0, 0, 0));
-        return new HitRecord(this, t, this.n, this.color);
+        return new HitRecord(this, t, this.n.normalize(), this.color);
     }
 }
 
@@ -154,7 +154,7 @@ class Sphere extends Surface {
 
         //console.log("Intersection at ", ray.evaluate(temp).toString());
 
-        const n = Vector3.scalarMultiplication(Vector3.subtract(ray.evaluate(tFinal),this.center), 2);
+        const n = Vector3.scalarDivision(Vector3.subtract(ray.evaluate(tFinal), this.center), this.radius);//Vector3.scalarMultiplication(Vector3.subtract(ray.evaluate(tFinal),this.center), 2);
 
         //n is surface normal
         return new HitRecord(this, tFinal, n, this.color);
