@@ -10,6 +10,20 @@ the site can be viewed [here](https://rt-example.jsanchezroa.umasscreate.net/) w
 
 ## Updates
 
+### 3/27/2023  
+**Shading update**  
+I tried to implement Blinn-Phong shading but I had trouble and it's not working quite right. Although there are shadows now and the shading does look a lot more natural/better than before.
+### *lights.js* 
+* Implemented shadows by using the scene to cast rays from the surface back to the light to check if it is blocked by another surface
+* Implemented proper coloring of surfaces by adding the RGB values of the material's color instead of multiplying it by the ambient light.
+* Sort of implemented Blinn-Phong shading. The shading looks better, and the equation is correct. But anytime I crank up the Phong exponent, the material doesn't get shinier and even appears to be more matte. IDK, I will look at it more and fix it next time.
+
+### *index.js*
+* Updated the values for materials according to new shading method
+* Also updated the `shade_ray()` function accordingly
+
+**Plus some other small tweaks**
+
 ### 3/14/2023
 **Shading!!!** but without shadows or specular highlights
 #### *lights.js*

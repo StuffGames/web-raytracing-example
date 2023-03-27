@@ -37,16 +37,22 @@ class PointLight extends Light {
      * @param {HitRecord} hrec - HitRecord from casted ray
      * @returns {Color} Color from BRDF calculation
      */
-    illuminate(ray, hrec) {
+    illuminate(ray, hrec, scene) {
         const x = ray.evaluate(hrec.t); // Position on surface
         const r = Vector3.subtract(this.p, x).length(); // Radius, distance from position on surface to position of light source
         const l = Vector3.scalarDivision(Vector3.subtract(this.p, x), r); // Light direction to surface point x (normalized)
-        const n = hrec.n; // Surface normal on surface at point x
+        const n = hrec.n.normalize(); // Surface normal on surface at point x
 
+        const srec = scene.surfaces_group.hit(new Ray(x, l), 0.1/*epsilon*/, r);
+
+        // backwards for some reason????
+        if (srec.t < Infinity) {
+            return Color.black;
+        }
         const E = new Color(RGB.scalarDivision(RGB.scalarMultiplication(this.I.rgb, Math.max(0, Vector3.dotProduct(n, l))),(r**2))); // Irradiance as Color object
-        const k = hrec.s.material.evaluate(l, ray.direction/*v*/, n); // BRDF shading... i think
+        const k = hrec.s.material.evaluate(l, ray.direction/*v*/, n); // Specular Reflection stuff (BRDF)
 
-        return new Color(RGB.multiply(E.rgb, k.rgb)); // completed BRDF... i think
+        return new Color(RGB.multiply(E.rgb, k.rgb)); // completed BRDF
     }
 }
 
@@ -70,7 +76,7 @@ class AmbientLight extends Light {
      * @param {HitRecord} hrec - HitRecord from the ray intersection
      * @returns {Color} color from BRDF calculation
      */
-    illuminate(ray, hrec){
+    illuminate(ray, hrec, scene){
         const k = hrec.s.material.ka;
         return new Color(RGB.multiply(k.rgb, this.I.rgb));
     }
@@ -81,9 +87,11 @@ class AmbientLight extends Light {
  */
 class Material {
 
-    color = new Color(new RGB(0, 0, 0)); // Color of the material
+    color = new Color(new RGB(130, 130, 130)); // Color of the material
     ka = new Color(new RGB(100, 100, 100)); // Ambient Reflectance
-
+    R = Color.white;//new Color(new RGB(46, 46, 46));
+    p = 1; // Phong Exponent
+    ks = new Color (new RGB(10, 10, 10)); // Specular coefficient
     /**
      * Calculates color with BRDF based on material
      * @param {Vector3} l - Light direction
@@ -92,8 +100,21 @@ class Material {
      * @returns {Color} color based on material
      */
     evaluate(l, v, n){
-        // Implement  Blinn-Phong specular reflection : TODO later
-        //return new Color(new RGB(1, 1, 1));
-        return this.color;
+        
+        const h = Vector3.add(l, v).normalize(); // Half vector
+        return new Color(RGB.add(RGB.add(
+            RGB.scalarDivision(this.R.rgb, Math.PI), 
+            RGB.scalarMultiplication(
+                this.ks.rgb, 
+                Math.pow(
+                    Math.max(0, Vector3.dotProduct(n, h)), 
+                    this.p
+                    )
+                )),
+            this.color.rgb
+        ));
+        
+        //return new Color(RGB.add(RGB.scalarDivision(this.R.rgb, Math.PI), this.color.rgb));
+        //return new Color( RGB.add(this.R.rgb, this.color.rgb));
     }
 }
